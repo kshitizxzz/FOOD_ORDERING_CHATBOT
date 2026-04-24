@@ -1,11 +1,10 @@
 #!/bin/bash
 set -e
 
-PORT="${PORT:-80}"
+PORT="${PORT:-8080}"
 
 echo "window.APP_CONFIG = { API_BASE: \"\" };" > /var/www/html/config.js
 
-# Update nginx to listen on Railway's PORT
 sed -i "s/listen 80;/listen ${PORT};/" /etc/nginx/sites-available/default
 
 nginx -g 'daemon on;'
