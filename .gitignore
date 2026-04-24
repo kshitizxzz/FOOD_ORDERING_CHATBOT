@@ -1,0 +1,6 @@
+.DS_Store
+.env
+.venv/
+.mysql-local/
+backend/__pycache__/
+backend/.DS_Store
