@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+</head>
+<body>
+	<div class="container">
+    <header>
+        <nav>
+            <a href="#home">HOME</a> |
+            <a href="#menu">MENU</a> |
+            <a href="#location">LOCATION</a> |
+            <a href="#aboutus">ABOUT US</a> |
+            <a href="#contactus">CONTACT US</a>
+        </nav>
+    </header>
+
+    <section id="home">
+		<img src="banner.jpg" >
+        <!-- Add images here -->
+    </section>
+
+    <section id="menu">
+        <h2>Our Menu</h2>
+        <div class="grid-container">
+        <img src="menu1.jpg" alt="Menu item 1">
+        <img src="menu2.jpg" alt="Menu item 2">
+        <img src="menu3.jpg" alt="Menu item 3">
+    </div>
+        <button id="menuDemoBtn" class="menu-demo-btn">Run Demo Order</button>
+    </section>
+
+    <section id="location">
+        <h2>Location</h2>
+        <p>38 Patli Gali, Mumbai</p>
+        <!-- Add map widget here -->
+    </section>
+
+    <section id="contactus">
+        <h2>Contact Us</h2>
+        <p>Got questions? Want to place an order? Call us at +91791234567 or email us at info@atliqfastfood.com</p>
+    </section>
+
+    <section id="chatbot">
+        <h2>Chatbot Ordering Console</h2>
+        <p>Session ID: <span id="sessionId"></span></p>
+
+        <div class="chat-grid">
+            <div class="chat-card">
+                <h3>Add Items</h3>
+                <input id="addItems" type="text" placeholder="e.g. Samosa,Pizza">
+                <input id="addQty" type="text" placeholder="e.g. 2,1">
+                <button id="addBtn">Add to Order</button>
+            </div>
+
+            <div class="chat-card">
+                <h3>Remove Items</h3>
+                <input id="removeItems" type="text" placeholder="e.g. Samosa,Pizza">
+                <button id="removeBtn">Remove from Order</button>
+            </div>
+
+            <div class="chat-card">
+                <h3>Complete Order</h3>
+                <button id="completeBtn">Place My Order</button>
+            </div>
+
+            <div class="chat-card">
+                <h3>Track Order</h3>
+                <input id="trackOrderId" type="number" placeholder="e.g. 40">
+                <button id="trackBtn">Track</button>
+            </div>
+        </div>
+
+        <div class="chat-output" id="chatOutput">Ready. Start by adding items.</div>
+    </section>
+
+    <script>
+        const API_BASE =
+            (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ||
+            "/api";
+        const sessionId = "session-" + Math.random().toString(36).slice(2, 10);
+        document.getElementById("sessionId").textContent = sessionId;
+
+        function parseCsv(value) {
+            return value.split(",").map(v => v.trim()).filter(Boolean);
+        }
+
+        function show(text) {
+            document.getElementById("chatOutput").textContent = text;
+        }
+
+        async function post(path, body) {
+            const res = await fetch(API_BASE + path, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            return data.fulfillmentText || "Done.";
+        }
+
+        document.getElementById("addBtn").addEventListener("click", async () => {
+            try {
+                const items = parseCsv(document.getElementById("addItems").value);
+                const qty = parseCsv(document.getElementById("addQty").value).map(Number);
+                if (!items.length || !qty.length) {
+                    show("Please enter at least one item and quantity.");
+                    return;
+                }
+                const msg = await post("/order/add", { session_id: sessionId, food_items: items, quantities: qty });
+                show(msg);
+            } catch (e) {
+                show("Add failed. Check backend is running.");
+            }
+        });
+
+        document.getElementById("removeBtn").addEventListener("click", async () => {
+            try {
+                const items = parseCsv(document.getElementById("removeItems").value);
+                if (!items.length) {
+                    show("Please enter items to remove.");
+                    return;
+                }
+                const msg = await post("/order/remove", { session_id: sessionId, food_items: items });
+                show(msg);
+            } catch (e) {
+                show("Remove failed. Check backend is running.");
+            }
+        });
+
+        document.getElementById("completeBtn").addEventListener("click", async () => {
+            try {
+                const msg = await post("/order/complete", { session_id: sessionId });
+                show(msg);
+            } catch (e) {
+                show("Complete failed. Check backend is running.");
+            }
+        });
+
+        document.getElementById("trackBtn").addEventListener("click", async () => {
+            try {
+                const orderId = Number(document.getElementById("trackOrderId").value);
+                if (!orderId) {
+                    show("Please enter a valid order id.");
+                    return;
+                }
+                const msg = await post("/order/track", { order_id: orderId });
+                show(msg);
+            } catch (e) {
+                show("Track failed. Check backend is running.");
+            }
+        });
+
+        document.getElementById("menuDemoBtn").addEventListener("click", async () => {
+            try {
+                document.getElementById("addItems").value = "Samosa,Pizza";
+                document.getElementById("addQty").value = "2,1";
+                show("Running demo: add -> complete -> track...");
+
+                const addMsg = await post("/order/add", {
+                    session_id: sessionId,
+                    food_items: ["Samosa", "Pizza"],
+                    quantities: [2, 1]
+                });
+
+                const completeMsg = await post("/order/complete", {
+                    session_id: sessionId
+                });
+
+                const match = completeMsg.match(/order id #\s*(\d+)/i);
+                const orderId = match ? Number(match[1]) : null;
+
+                let trackMsg = "Could not parse order id from completion message.";
+                if (orderId) {
+                    document.getElementById("trackOrderId").value = orderId;
+                    trackMsg = await post("/order/track", { order_id: orderId });
+                }
+
+                show(
+                    "Demo completed.\n\n" +
+                    "1) " + addMsg + "\n\n" +
+                    "2) " + completeMsg + "\n\n" +
+                    "3) " + trackMsg
+                );
+            } catch (e) {
+                show("Demo failed. Please ensure backend is running.");
+            }
+        });
+    </script>
+	</div>
+</body>
+</html>

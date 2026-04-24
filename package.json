@@ -1,0 +1,11 @@
+{
+  "name": "food-ordering-chatbot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "End-to-end food ordering chatbot deployed on Netlify.",
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "@netlify/functions": "^2.8.2"
+  }
+}

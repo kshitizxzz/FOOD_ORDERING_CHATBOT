@@ -4,3 +4,5 @@
 .mysql-local/
 backend/__pycache__/
 backend/.DS_Store
+node_modules/
+.netlify/
