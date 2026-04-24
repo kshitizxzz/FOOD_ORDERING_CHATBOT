@@ -1,0 +1,127 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #ff5733;
+    text-align: center;
+    padding: 20px;
+    color: #fff;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #fff;
+    transition: color 0.3s ease-in-out;
+}
+
+nav a:hover {
+    color: #f0f0f0;
+}
+
+section {
+    margin: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+}
+
+section h2 {
+    color: #ff5733;
+}
+
+footer {
+    background-color: #ff5733;
+    text-align: center;
+    padding: 10px;
+    color: #fff;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1200px; /* or any other value */
+    padding: 0 20px; /* adding 20px of padding */
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    text-align: center;
+}
+section img {
+    display: block;
+    margin: auto;
+    width: 100%;
+    height: auto;
+}
+
+.menu-demo-btn {
+    margin-top: 16px;
+    background: #ff5733;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.chat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.chat-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: left;
+}
+
+.chat-card h3 {
+    margin-top: 0;
+    color: #ff5733;
+}
+
+.chat-card input {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.chat-card button {
+    background: #ff5733;
+    color: #fff;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chat-output {
+    margin-top: 16px;
+    background: #fff8f6;
+    border: 1px solid #ffd0c4;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 48px;
+    text-align: left;
+    white-space: pre-line;
+}
